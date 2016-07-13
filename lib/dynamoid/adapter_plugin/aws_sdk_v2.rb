@@ -24,6 +24,34 @@ module Dynamoid
         @client
       end
 
+      # Puts or deletes multiple items in one or more tables
+      #
+      # @param [String] table_name the name of the table
+      # @param [Array]  items to be processed
+      # @param [Hash]   additional options
+      #
+      #See: http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#batch_write_item-instance_method
+      def batch_write_item table_name, objects, options = {}
+        request_items = []
+        objects.each do |o|
+          request_items << { "put_request" => { item: o } }
+        end
+
+        begin
+          client.batch_write_item(
+            {
+              request_items: {
+                table_name => request_items,
+              },
+              return_consumed_capacity: "TOTAL",
+              return_item_collection_metrics: "SIZE"
+            }.merge!(options)
+          )
+        rescue Aws::DynamoDB::Errors::ConditionalCheckFailedException => e
+          raise Dynamoid::Errors::ConditionalCheckFailedException, e
+        end
+      end
+
       # Get many items at once from DynamoDB. More efficient than getting each item individually.
       #
       # @example Retrieve IDs 1 and 2 from the table testtable
@@ -256,8 +284,8 @@ module Dynamoid
       #
       # @since 1.0.0
       #
-      # @todo: Provide support for various options http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#put_item-instance_method
-      def put_item(table_name, object, options = nil)
+      # See: http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#put_item-instance_method
+      def put_item(table_name, object, options = {})
         item = {}
 
         object.each do |k, v|
@@ -266,9 +294,12 @@ module Dynamoid
         end
 
         begin
-          client.put_item(table_name: table_name,
-            item: item,
-            expected: expected_stanza(options)
+          client.put_item(
+            {
+              table_name: table_name,
+              item: item,
+              expected: expected_stanza(options)
+            }.merge!(options)
           )
         rescue Aws::DynamoDB::Errors::ConditionalCheckFailedException => e
           raise Dynamoid::Errors::ConditionalCheckFailedException, e
