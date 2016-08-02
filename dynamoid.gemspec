@@ -62,7 +62,8 @@ Gem::Specification.new do |s|
   s.rubygems_version = "1.8.24"
   s.summary = "Dynamoid is an ORM for Amazon's DynamoDB"
 
-  s.add_runtime_dependency(%q<activemodel>, ["~> 4"])
+  s.add_runtime_dependency(%q<activemodel>, ["~> 5.0.0"])
+  s.add_runtime_dependency(%q<activemodel-serializers-xml>)
   s.add_runtime_dependency(%q<aws-sdk-resources>, ["~> 2"])
   s.add_runtime_dependency(%q<concurrent-ruby>, [">= 1.0"])
   s.add_development_dependency(%q<rake>, [">= 0"])
@@ -73,4 +74,3 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<pry>, [">= 0"])
   s.add_development_dependency(%q<coveralls>, [">= 0"])
 end
-

@@ -1,4 +1,6 @@
 # encoding: utf-8
+require 'activemodel-serializers-xml'
+
 module Dynamoid
 
   # All modules that a Document is composed of are defined in this
