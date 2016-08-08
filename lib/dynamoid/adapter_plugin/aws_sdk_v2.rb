@@ -294,13 +294,13 @@ module Dynamoid
         end
 
         begin
-          client.put_item(
-            {
-              table_name: table_name,
-              item: item,
-              expected: expected_stanza(options)
-            }.merge!(options || {})
-          )
+          request = {
+            table_name: table_name,
+            item: item,
+            expected: expected_stanza(options)
+          }
+          request = request.merge(options) unless options.nil?
+          client.put_item(request)
         rescue Aws::DynamoDB::Errors::ConditionalCheckFailedException => e
           raise Dynamoid::Errors::ConditionalCheckFailedException, e
         end
