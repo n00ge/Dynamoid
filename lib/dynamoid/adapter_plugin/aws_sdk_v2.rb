@@ -287,6 +287,7 @@ module Dynamoid
       # See: http://docs.aws.amazon.com/sdkforruby/api/Aws/DynamoDB/Client.html#put_item-instance_method
       def put_item(table_name, object, options = {})
         item = {}
+        options = {} if options.nil?
 
         object.each do |k, v|
           next if v.nil? || (v.respond_to?(:empty?) && v.empty?)
